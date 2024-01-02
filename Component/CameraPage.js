@@ -85,7 +85,6 @@ const CameraPage = () => {
   };
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -101,24 +100,28 @@ const CameraPage = () => {
   };
 
   const handleSubmit = async () => {
-    // Simulate fetching the disease name from an API or database
-    // For now, set a default disease name
 
-    const apiUrl = 'https://btp-app-2020eeb1183.onrender.com/';
+    const apiUrl = 'https://btp-app-2020eeb1183.onrender.com/predict';
 
-    axios.get(apiUrl)
-      .then((response) => {
-        // Handle the response data here
-        console.log('GET request successful', response.data);
-      })
-      .catch((error) => {
-        console.log(apiUrl);
-        // Handle any errors that occur during the request
-        console.error('GET request error', error);
+    const formData = new FormData();
+    formData.append('image', {
+      uri: capturedImage,
+      type: 'image/jpeg',
+      name: capturedImage.fileName || 'image.jpg',
+    });
+    console.log(formData);
+
+    try{
+      const response = await axios.post(apiUrl, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
-
-    const predictedDisease = 'Potato Healthy';
-    setDiseaseName(predictedDisease);
+      console.log('GET request successful', response.data);
+      setDiseaseName(response.data.prediction);
+    } catch (error) {
+      console.error('GET request error', error);
+    }
   };
 
   return (
@@ -132,32 +135,6 @@ const CameraPage = () => {
         <View style={styles.diseaseSection}>
           <Text style={styles.diseaseText}>Disease Name: {diseaseName}</Text>
           <View style={styles.submitButtonSection}>
-            <Dropdown
-              style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={data}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder="Select item"
-              searchPlaceholder="Search..."
-              value={value}
-              onChange={(item) => {
-                setValue(item.value);
-              }}
-              renderLeftIcon={() => (
-                <AntDesign
-                  style={styles.icon}
-                  color="black"
-                  name="Safety"
-                  size={20}
-                />
-              )}
-            />
             <TouchableOpacity
               style={styles.submitButton}
               onPress={handleSubmit}>
@@ -212,7 +189,7 @@ const styles = StyleSheet.create({
   },
   defaultImage: {
     width: width - 20,
-    height: (height - 40) / 3,
+    height: (height - 50) / 3,
   },
   welcomeText: {
     fontSize: 16,
@@ -233,7 +210,8 @@ const styles = StyleSheet.create({
   },
   diseaseText: {
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 5,
+    marginTop: 15
   },
   submitButtonSection: {
     flexDirection: 'row',
@@ -277,6 +255,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     padding: 15,
     borderRadius: 50,
+    margin: 5
   },
   captureButtonText: {
     fontSize: 18,

@@ -1,14 +1,16 @@
 import { Camera, CameraType } from 'expo-camera';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import CameraPage from './Component/CameraPage';
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from './Component/AppNavigator'; 
+
 
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <CameraPage/>
-    </View>
+    <NavigationContainer>
+      <AppNavigator />
+    </NavigationContainer>
   );
 }
 
