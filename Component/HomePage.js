@@ -9,7 +9,7 @@ const HomePage = ({ navigation }) => {
         <View style={styles.container}>
 
             <View style={styles.welcome}>
-                <Welcome />
+                <Welcome  navigation={navigation} />
             </View>
 
             <View>
@@ -64,7 +64,8 @@ const styles = StyleSheet.create({
     },
     heading:{
         fontWeight: 'bold',
-        fontSize: 15
+        fontSize: 17,
+        marginRight: 199
     }
 });
 

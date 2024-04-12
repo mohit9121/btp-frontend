@@ -15,19 +15,13 @@ import axios from 'axios';
 
 import { Camera } from 'expo-camera';
 
-const data = [
-  { label: 'Potato', value: 'Potato' },
-  { label: 'Tomato', value: 'Tomato' },
-  { label: 'Apple', value: 'Apple' },
-  { label: 'Rice', value: 'Rice' },
-  { label: 'Wheat', value: 'Wheat' },
-];
 
-const CameraPage = () => {
+
+const CameraPage = ({ navigation }) => {
   const [capturedImage, setCapturedImage] = useState(null);
   const [cameraReady, setCameraReady] = useState(false);
-  const [diseaseName, setDiseaseName] = useState("Click 'Submit' to get disease");
-  const [value, setValue] = useState(null);
+  const [isRequestMade, setIsRequestMade] = useState(false);
+  const [diseaseData, setDiseaseData] = useState("Click 'Submit' to get disease");
   const cameraRef = React.createRef();
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
@@ -79,7 +73,7 @@ const CameraPage = () => {
     if (cameraReady && cameraRef.current) {
       const options = { quality: 0.5, base64: true };
       const data = await cameraRef.current.takePictureAsync(options);
-      setDiseaseName("Click 'Submit' to get disease");
+      setDiseaseData("Click 'Submit' to get disease");
       setCapturedImage(data.uri);
     }
   };
@@ -93,6 +87,7 @@ const CameraPage = () => {
     });
 
     console.log(result);
+    setIsRequestMade(false)
 
     if (!result.canceled) {
       setCapturedImage(result.assets[0].uri);
@@ -111,17 +106,23 @@ const CameraPage = () => {
     });
     console.log(formData);
 
-    try{
+    try {
       const response = await axios.post(apiUrl, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       console.log('GET request successful', response.data);
-      setDiseaseName(response.data.prediction);
+      setDiseaseData(response.data);
     } catch (error) {
       console.error('GET request error', error);
     }
+    setIsRequestMade(true);
+  };
+
+  const handleDetailsPageNevigation = () => {
+    // Navigate to a different screen with data
+    navigation.navigate('PredictionPage', { data: diseaseData });
   };
 
   return (
@@ -133,13 +134,21 @@ const CameraPage = () => {
       )}
       {capturedImage && (
         <View style={styles.diseaseSection}>
-          <Text style={styles.diseaseText}>Disease Name: {diseaseName}</Text>
+          <Text style={styles.diseaseText}>Disease Name: {diseaseData.disease}</Text>
           <View style={styles.submitButtonSection}>
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={handleSubmit}>
-              <Text style={styles.submitButtonText}>Submit</Text>
-            </TouchableOpacity>
+            {isRequestMade ? (
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleDetailsPageNevigation}>
+                <Text style={styles.submitButtonText}>Get More Details</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleSubmit}>
+                <Text style={styles.submitButtonText}>Submit</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       )}
