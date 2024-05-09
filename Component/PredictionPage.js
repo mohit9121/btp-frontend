@@ -43,13 +43,13 @@ const PredictionPage = ({ route }) => {
       <Text style={styles.title}>{data.disease}</Text>
       <Picker
         selectedValue={language}
-        style={{ height: 50, width: 150, color: 'black' }} 
-        
+        style={{ height: 50, width: '100%', fontSize: 20 }}
+        itemStyle={{ color: 'blue' }}
         onValueChange={(itemValue) => handleLanguageChange(itemValue)}
       >
-        <Picker.Item label="English" value="en" />
-        <Picker.Item label="Hindi" value="hi" />
-        <Picker.Item label="Punjabi" value="pa" />
+        <Picker.Item label="English" value="en" style={{ fontSize: 20 }}/>
+        <Picker.Item label="Hindi" value="hi" style={{ fontSize: 20 }}/>
+        <Picker.Item label="Punjabi" value="pa" style={{ fontSize: 20 }}/>
       </Picker>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>causess:</Text>
